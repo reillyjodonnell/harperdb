@@ -1,7 +1,17 @@
 ## Here we can define any tables in our database. This example shows how we define a type as a table using
 ## the type name as the table name and specifying it is an "export" available in the REST and other external protocols.
-type TableName @table @export {
-    id: ID @primaryKey # Here we define primary key (must be one)
-    name: String # we can define any other attributes here
-    tag: String @indexed # we can specify any attributes that should be indexed
+type User @table @export {
+  id: ID @primaryKey # Here we define primary key (must be one)
+  name: String # we can define any other attributes here
+  email: String
+  location: String
+  messages: [Message] @relationship(to: senderId)
+}
+
+type Message @table @export {
+  id: ID @primaryKey
+  content: String
+  senderId: ID! @indexed
+  sender: User @relationship(from: senderId)
+  timestamp: DateTime!
 }
