@@ -57,22 +57,25 @@ export default async function Page({ params }) {
           <p className="text-sm font-medium text-slate-500">5 day forecast</p>
         </div>
         <div className="flex flex-1 px-2 py-4 gap-4 overflow-x-auto">
-          {fiveDayForecast.map((forecast, index) => (
-            <div
-              key={forecast.day}
-              className="flex flex-1 flex-col justify-center items-center space-y-2 min-w-[50px]"
-            >
-              <p className="text-sm text-slate-500">
-                {index === 0 ? 'Today' : forecast.day}
-              </p>
-              <WeatherIcon weather={forecast.status} className="w-6 h-6" />
-              <div className="text-sm text-gray-700 mt-1">
-                <span className="font-medium">{forecast.high}°</span>
-                <span className="text-gray-500 mx-1">/</span>
-                <span className="text-gray-500">{forecast.low}°</span>
+          {fiveDayForecast.map((forecast, index) => {
+            console.log(forecast);
+            return (
+              <div
+                key={forecast.day}
+                className="flex flex-1 flex-col justify-center items-center space-y-2 min-w-[50px]"
+              >
+                <p className="text-sm text-slate-500">
+                  {index === 0 ? 'Today' : forecast.day}
+                </p>
+                <WeatherIcon weather={forecast.status} className="w-6 h-6" />
+                <div className="text-sm text-gray-700 mt-1">
+                  <span className="font-medium">{forecast.high}°</span>
+                  <span className="text-gray-500 mx-1">/</span>
+                  <span className="text-gray-500">{forecast.low}°</span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <Chat user={user} initialMessages={messages} />
