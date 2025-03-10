@@ -58,7 +58,6 @@ export default async function Page({ params }) {
         </div>
         <div className="flex flex-1 px-2 py-4 gap-4 overflow-x-auto">
           {fiveDayForecast.map((forecast, index) => {
-            console.log(forecast);
             return (
               <div
                 key={forecast.day}
