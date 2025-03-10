@@ -47,6 +47,64 @@ export class Seed extends Resource {
         records: cityCoordinates,
       });
 
+      await tables.User.operation({
+        operation: 'insert',
+        records: [
+          {
+            id: '9cf6450a-68b5-4afd-a31b-bfdb7f9e2c74',
+            name: 'Reilly',
+            email: 'Reilly@harperdb.com',
+            messages: [],
+          },
+          {
+            id: '9cf6450a-68b5-4afd-a31b-bfdb7f9e2c75',
+            name: 'John',
+            email: 'john@gmail.com',
+            messages: [],
+          },
+          {
+            id: '9cf6450a-68b5-4afd-a31b-bfdb7f9e2c76',
+            name: 'Beth',
+            email: 'beth@yahoo.com',
+            messages: [],
+          },
+        ],
+      });
+
+      // again I don't know why sql conditionals aren't working for me :/
+      const users = await tables.User.search({
+        operation: 'sql',
+        sql: 'SELECT * FROM User',
+      });
+
+      const allUsers = [...users];
+
+      await tables.Message.operation({
+        operation: 'insert',
+        records: [
+          {
+            content:
+              'Heads up everyone! The plains is getting a lot of wind right now.',
+            senderId: '9cf6450a-68b5-4afd-a31b-bfdb7f9e2c75',
+            timestamp: new Date().toISOString(),
+            sender: allUsers.filter(
+              (user) => user.id === '9cf6450a-68b5-4afd-a31b-bfdb7f9e2c75'
+            )[0],
+          },
+          {
+            content:
+              'Thanks for the heads up John! We have spots of rain here in the valley. Must be working our way!',
+            senderId: '9cf6450a-68b5-4afd-a31b-bfdb7f9e2c76',
+            timestamp: new Date().toISOString(),
+            sender: allUsers.filter(
+              (user) => user.id === '9cf6450a-68b5-4afd-a31b-bfdb7f9e2c76'
+            )[0],
+          },
+        ],
+      });
+
+      // Todo - connect the 2 generated messages to the users
+
       console.log('Data seeded successfully:', response);
     } catch (error) {
       console.error('Error seeding database:', error);
