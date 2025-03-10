@@ -8,6 +8,13 @@ type User @table @export {
   messages: [Message] @relationship(to: senderId)
 }
 
+type City @table @export {
+  id: ID @primaryKey
+  name: String
+  lat: Float
+  lon: Float
+}
+
 type Message @table @export {
   id: ID @primaryKey
   content: String

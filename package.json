@@ -2,8 +2,34 @@
   "name": "application-template",
   "version": "1.0.0",
   "description": "A template for building HarperDB applications",
-  "type": "module",
+  "scripts": {
+    "dev": "harperdb-nextjs dev",
+    "build": "harperdb-nextjs build",
+    "start": "harperdb-nextjs start",
+    "lint": "next lint"
+  },
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "@harperdb/nextjs": "^0.0.2",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@tailwindcss/postcss": "^4.0.12",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
+    "harperdb": "^4.3.21",
+    "lucide-react": "^0.479.0",
+    "next": "^14.2.7",
+    "postcss": "^8.5.3",
+    "react": "^18",
+    "react-dom": "^18",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss": "^4.0.12",
+    "tailwindcss-animate": "^1.0.7",
+    "vitest": "^3.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.9",
+    "@types/react": "19.0.10",
+    "typescript": "5.8.2"
   }
 }

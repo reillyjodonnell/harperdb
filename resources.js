@@ -7,7 +7,8 @@
 	5. I initally had a separate Chat table but decided to keep it extremely simple. The separate table would have allowed individual chat rooms on a per major city area basis. Happy to chat about how to adjust it to make that happen :D
 	
 */
-
+import { cityCoordinates } from './seed.js';
+import { getNext5DayForecast, kelvinToFahrenheit } from './weather/utils.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -24,23 +25,95 @@ export class User extends tables.User {
   }
 }
 
+// Todo - get autocomplete working
+
+// In a real prod app I'd seed with a command i.e. `node seed.js` but I couldn't find out how to run a script with the harperdb environment
+// i.e. harperdb run ____.js or harperdb run tsx __.ts was my intuition
+export class Seed extends Resource {
+  async post() {
+    const doesExist = await tables.City.search({
+      operation: 'sql',
+      sql: 'SELECT 1 FROM * LIMIT 1',
+    });
+
+    if ([...doesExist].length) {
+      throw new Error('Data already seeded');
+    }
+
+    try {
+      // the type is wrong. operation does exist
+      const response = await tables.City.operation({
+        operation: 'insert',
+        records: cityCoordinates,
+      });
+
+      console.log('Data seeded successfully:', response);
+    } catch (error) {
+      console.error('Error seeding database:', error);
+    }
+
+    return {
+      res: 'Data seeded successfully',
+    };
+  }
+}
+
 export class Weather extends Resource {
-  async get(searchParams, ...rest) {
-    const id = searchParams.get('id');
-    if (!id) {
-      throw new Error('Missing id');
-    }
-    const user = await tables.User.get(id);
-    if (!user) {
-      throw new Error('User not found');
+  async get(searchParams) {
+    const cityParam = searchParams.get('city');
+    if (!cityParam) {
+      throw new Error('Missing name');
     }
 
-    const weather = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${user.location}&appid=${process.env.WEATHER_API_KEY}`
-    );
-    const json = await weather.json();
+    const name = decodeURIComponent(cityParam);
 
-    return { res: json };
+    try {
+      const found = await tables.City.search({
+        operation: 'sql',
+        sql: `SELECT * FROM City WHERE name = 'San Francisco, CA'`,
+      });
+
+      // temp hack until I find out why my sql above isn't working
+      const resolved = [...found].filter((city) => city.name === name)[0];
+
+      if (!resolved) {
+        throw new Error('City not found');
+      }
+
+      const next5Url = `https://api.openweathermap.org/data/2.5/forecast?lat=${resolved.lat}&lon=${resolved.lon}&appid=${process.env.WEATHER_API_KEY}`;
+      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${resolved.lat}&lon=${resolved.lon}&appid=${process.env.WEATHER_API_KEY}`;
+
+      const [currentWeatherResponse, next5Response] = await Promise.all([
+        fetch(currentWeatherUrl),
+        fetch(next5Url),
+      ]);
+
+      const [currentWeatherJson, next5Json] = await Promise.all([
+        currentWeatherResponse.json(),
+        next5Response.json(),
+      ]);
+
+      const weatherData = {
+        current: {
+          temperature: Math.round(
+            kelvinToFahrenheit(currentWeatherJson.main.temp)
+          ),
+          high: Math.round(
+            kelvinToFahrenheit(currentWeatherJson.main.temp_max)
+          ),
+          low: Math.round(kelvinToFahrenheit(currentWeatherJson.main.temp_min)),
+          status: currentWeatherJson.weather[0].main,
+        },
+        next5: getNext5DayForecast(next5Json),
+      };
+
+      return {
+        res: weatherData,
+      };
+    } catch (err) {
+      console.error('Error fetching weather:', err);
+      throw new Error('Error fetching weather: ', err);
+    }
   }
 }
 
@@ -83,7 +156,7 @@ export class Chat extends Resource {
             false
           );
 
-          outgoingMessages.send(JSON.stringify(newMessage));
+          outgoingMessages.send(newMessage);
         } catch (error) {
           console.log('error:', error);
           outgoingMessages.send(

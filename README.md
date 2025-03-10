@@ -1,15 +1,13 @@
-# HarperDB Application Template
+# HarperDB Weather app
 
-This is a template for building [HarperDB](https://www.harperdb.io/) applications. You can download this repository as a starting point for building applications with HarperDB. To get started, make sure you have [installed HarperDB](https://docs.harperdb.io/docs/install-harperdb), which can be quickly done with `npm install -g harperdb`. You can run your application from the directory where you downloaded the contents of this repository with:
+## How to run
 
-`harperdb run /path/to/your-app`
+1. Generate api token called `WEATHER_API_KEY` [here](https://home.openweathermap.org/)
+2. have harperdb installed globally: `npm i -g harperdb`
+3. install deps with `npm i`
+4. Run with `npm run dev`
+5. Seed with `curl -X POST http://localhost:9926/Seed -H "Content-Type: application/json"` in terminal (be sure harperdb server is running from step 3)
 
-(or if you enter that directory, you can run the current directory as `harperdb run .`).
+### How to open studio
 
-For more information about getting started with HarperDB and building applications, see our getting started guide.
-
-This template includes the [default configuration](./config.yaml), which specifies how files are handled in your application.
-
-The [schema.graphql](./schema.graphql) is the schema definition. This is the main starting point for defining your database schema, specifying which tables you want and what attributes/fields they should have.
-
-The [resources.js](./resources.js) provides a template for defining JavaScript resource classes, for customized application logic in your endpoints.
+http://localhost:9925

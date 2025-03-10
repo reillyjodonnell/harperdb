@@ -41,4 +41,6 @@ We have an insane DX win if we integrate TS to get autocomplete for tables
 
 `npx harperdb studio` AND BOOM you have localhost:3000/studio up and running to interact with db
 
+http://localhost:9925/ has the studio - holy cow that was difficult to find
+
 In the studio I'd love to be able to change values in the input/cell instead of it doing a json representation that doesn't show the attributes
