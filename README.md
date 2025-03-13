@@ -12,3 +12,8 @@
 ### How to open studio
 
 http://localhost:9925
+
+### e2e typesafety demo
+
+1. `npm i -g bun`
+2. `bun run schema.tsx`
