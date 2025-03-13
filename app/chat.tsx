@@ -65,14 +65,14 @@ export function Chat({ initialMessages, user }: { initialMessages: Messages }) {
                       : 'flex-row'
                   }`}
                 >
-                  <div className="message-avatar">
+                  <div className="bg-slate-700 border-2 border-slate-700 message-avatar">
                     {message.sender.name[0].toUpperCase()}
                   </div>
                   <div
                     className={`flex flex-col justify-between  p-4 rounded-sm text-sm break-words whitespace-pre-wrap max-w-[50%] ${
                       message.sender.id === user.id
                         ? 'bg-white items-end text-black border border-slate-100'
-                        : 'bg-slate-800 items-start text-white border border-slate-800'
+                        : 'bg-slate-700 items-start text-white border border-slate-600'
                     }`}
                   >
                     {message.content}

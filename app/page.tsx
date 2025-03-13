@@ -85,7 +85,7 @@ export function WeatherIcon({
   weather,
   className,
 }: {
-  weather: 'Clear' | 'Clouds' | 'fog' | 'lightning' | 'Rain';
+  weather: 'Clear' | 'Clouds' | 'fog' | 'lightning' | 'Rain' | 'Snow';
   className?: string;
 }) {
   switch (weather) {
@@ -181,6 +181,28 @@ export function WeatherIcon({
           <path d="M16 14v6" />
           <path d="M8 14v6" />
           <path d="M12 16v6" />
+        </svg>
+      );
+    }
+    case 'Snow': {
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={`text-slate-400 ${className}`}
+        >
+          <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+          <path d="M8 15h.01" />
+          <path d="M8 19h.01" />
+          <path d="M12 17h.01" />
+          <path d="M12 21h.01" />
+          <path d="M16 15h.01" />
+          <path d="M16 19h.01" />
         </svg>
       );
     }
