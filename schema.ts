@@ -2,10 +2,9 @@
 
 // npm i drizzle-orm
 import { drizzle } from 'drizzle-orm/pg-proxy';
-import { pgSchema, pgTable, integer, varchar } from 'drizzle-orm/pg-core';
-import { eq } from 'drizzle-orm';
+import { pgSchema, integer, varchar } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
-// TODO: Implement a hdbSchema - which will provide the correct column types for HarperDB
 const dev = pgSchema('data');
 
 export const users = dev.table('users', {
@@ -14,12 +13,8 @@ export const users = dev.table('users', {
   age: integer('age'),
 });
 
-export type User = typeof users.$inferSelect;
 const db = drizzle(() => {}, { schema: { users } });
 
-import { sql } from 'drizzle-orm';
-
-// SELECT query
 const selectQuery = db
   .select({
     id: users.id,
@@ -27,6 +22,48 @@ const selectQuery = db
   })
   .from(users)
   .where(sql`${users.name} = 'Alice'`);
+
+async function demo() {
+  try {
+    const sql = transformSqlQuery(selectQuery.toSQL().sql);
+    console.log('Generated SQL:', sql);
+    const res = await execute<Awaited<ReturnType<typeof selectQuery.execute>>>(
+      sql
+    );
+    console.log('Result:', res);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+demo();
+
+/*
+POSSIBLE API
+
+
+const dev = hdbSchema('data');
+
+export const users = dev.table('users', {
+  id: number('id').primaryKey(),
+  name: string('name'),
+  age: number('age'),
+});
+
+export type User = typeof users.$inferSelect;
+
+const harperdb = new HarperDBClient({
+  url: 'http://localhost:9925',
+  username: 'HDB_ADMIN',
+  password: 'password',
+});
+
+const db = drizzle({ client: harperdb, schema: { users } });
+
+// SELECT one row
+const oneRow = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.name, 'Alice')).get();
+console.log('One row:', oneRow);
+*/
 
 function transformSqlQuery(query: string): string {
   // Replace all \"...\" with just the content inside
@@ -48,9 +85,9 @@ function transformSqlQuery(query: string): string {
 }
 
 async function execute<T>(sql: string): Promise<T> {
-  const url = 'http://localhost:9925'; // Replace with your HarperDB URL
-  const username = 'HDB_ADMIN'; // Replace with your HarperDB username
-  const password = 'password'; // Replace with your HarperDB password
+  const url = 'http://localhost:9925';
+  const username = 'HDB_ADMIN';
+  const password = 'password';
   const authHeader =
     'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
 
@@ -79,47 +116,3 @@ async function execute<T>(sql: string): Promise<T> {
     throw error;
   }
 }
-
-type QueryResult = Awaited<ReturnType<typeof selectQuery.execute>>;
-
-async function huh() {
-  try {
-    console.log('Sending');
-    const res = await execute<QueryResult>(
-      transformSqlQuery(selectQuery.toSQL().sql)
-    );
-    console.log('sent');
-    console.log(res);
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-huh();
-
-/*
-POSSIBLE API
-
-
-const dev = pgSchema('data');
-
-export const users = dev.table('users', {
-  id: integer('id').primaryKey(),
-  name: varchar('name', { length: 255 }).notNull(),
-  age: integer('age'),
-});
-
-export type User = typeof users.$inferSelect;
-
-const harperdb = new HarperDBClient({
-  url: 'http://localhost:9925',
-  username: 'HDB_ADMIN',
-  password: 'password',
-});
-
-const db = drizzle({ client: harperdb, schema: { users } });
-
-// SELECT one row
-const oneRow = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.name, 'Alice')).get();
-console.log('One row:', oneRow);
-*/
